@@ -4,29 +4,27 @@
   <meta charset="UTF-8">
   <title>Chatbot proyek</title>
   <style>
-  body {
-  font-family: Arial, sans-serif;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    body {
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(270deg, blue, purple, maroon, gray);
+      background-size: 800% 800%;
+      animation: gradientMove 15s ease infinite;
+    }
 
-  /* background gradasi animasi */
-  background: linear-gradient(270deg, blue, purple, maroon, gray);
-  background-size: 800% 800%;
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-  animation: gradientMove 15s ease infinite;
-}
-
-/* bikin animasi */
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
     .chatbox {
-      width: 50%;
-      height: 50%;
+      width: 100%;
+      max-width: 400px;
+      height: 80vh;
       background: #fff;
       border-radius: 10px;
       display: flex;
@@ -34,21 +32,28 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       overflow: hidden;
     }
+
     .messages {
       flex: 1;
       padding: 10px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
+
     .input-area {
       display: flex;
-      border-top: 1px solid #ddd;
+      border-top: 5px solid #ddd;
     }
+
     .input-area input {
       flex: 1;
       padding: 10px;
       border: none;
       outline: none;
     }
+
     .input-area button {
       padding: 10px 15px;
       border: none;
@@ -56,8 +61,27 @@
       color: white;
       cursor: pointer;
     }
-    .user { color: blue; margin: 5px 0; }
-    .bot { color: green; margin: 5px 0; }
+
+    .bubble {
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+
+    .user {
+      background: #4CAF50;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 0;
+    }
+
+    .bot {
+      background: #e0e0e0;
+      color: black;
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+    }
   </style>
 </head>
 <body>
@@ -72,22 +96,15 @@
   <script>
     let responses = {};
 
-    // Ambil data dari JSON
     fetch("respone.json")
       .then(res => res.json())
-      .then(data => {
-        responses = data;
-      })
-      .catch(err => {
-        console.error("Gagal load JSON:", err);
-      });
+      .then(data => responses = data)
+      .catch(err => console.error("Gagal load JSON:", err));
 
     function botResponse(msg) {
       msg = msg.toLowerCase();
       for (let key in responses) {
-        if (msg.includes(key)) {
-          return responses[key];
-        }
+        if (msg.includes(key)) return responses[key];
       }
       return "Hmm... aku belum paham, coba tanya yang lain 😉";
     }
@@ -95,19 +112,18 @@
     function sendMessage() {
       let input = document.getElementById("userInput");
       let messages = document.getElementById("messages");
-
       if (input.value.trim() === "") return;
 
       // pesan user
       let userMsg = document.createElement("div");
-      userMsg.className = "user";
-      userMsg.innerText = "Kamu: " + input.value;
+      userMsg.className = "bubble user";
+      userMsg.innerText = input.value;
       messages.appendChild(userMsg);
 
       // pesan bot
       let botMsg = document.createElement("div");
-      botMsg.className = "bot";
-      botMsg.innerText = "Bot: " + botResponse(input.value);
+      botMsg.className = "bubble bot";
+      botMsg.innerText = botResponse(input.value);
       messages.appendChild(botMsg);
 
       messages.scrollTop = messages.scrollHeight;
